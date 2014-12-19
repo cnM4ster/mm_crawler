@@ -5,10 +5,11 @@
 
 from requests import get,post
 from optparse import OptionParser
-from bs4 import BeautifulSoup
-from sys import exit
+#from bs4 import BeautifulSoup
+from urllib2 import urlopen
+#from sys import exit
 from time import time
-import re
+import re,urllib
 
 if __name__ == '__main__':
     parser = OptionParser()
@@ -22,25 +23,43 @@ if __name__ == '__main__':
     thread = options.thread # 线程数
     useragent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.102 Safari/537.36'
 
-    if options.mode == 'qingchun':
-    	#清纯私房
-    	url = 'http://www.mnsfz.com/h/qingchun/index.html'
+    if options.mode:
+    	url = 'http://www.mnsfz.com/h/%s/index.html' % (options.mode)
     	try:
-    		returnreq = get(url)
+    		returnreq = urlopen(url)
     	except:
-    		print '[x] 错误，错误原因：网络异常'
-    	if returnreq.status_code == 403:
-    		print '[x] 错误，错误原因：频率过高,此站有狗'
-    	elif returnreq.status_code == 200:
-    		soup = BeautifulSoup(returnreq.text)
-    		returnsoup = soup.find_all("img")
-    		imglist =[]
-    		for i in returnsoup:
-    			imglist.append(i)
-    		for i in range(len(imglist)):
-    			print imglist[i]
-    			#print re.findall('<img\ssrc="(http://.*)">',)
-    		#print soup
-
+    		print '错误，错误原因：网络异常'
+    	if returnreq.code == 403:
+    		print '错误，错误原因：可能频率过高,此站有安全狗'
+    	elif returnreq.code == 200:
+    		content = returnreq.read()
+    		imglist = re.findall(r'src="(http://.*?)"',content)
+    		x=0
+    		for imgurl in imglist:
+    			urllib.urlretrieve(imgurl,'./%s/%s_%s.jpg' % (options.output,options.mode,x))
+    			print "Download:%s" % imgurl
+    			x += 1
+    		if re.search(r'<div\sclass="spage">(.*)>></a></div>',content):
+    			print "存在下一页"
     	else:
-    		print '[x] 错误,错误原因:不正常的返回状态码'
+    		print '错误,错误原因:不正常的返回状态码'
+
+#==============================================================
+    if options.mode == 'tuijian':
+    	url = 'http://www.mnsfz.com/h/top/rec.html'
+    	try:
+    		returnreq = urlopen(url)
+    	except:
+    		print '错误，错误原因：网络异常'
+    	if returnreq.code == 403:
+    		print '错误，错误原因：可能频率过高,此站有安全狗'
+    	elif returnreq.code == 200:
+    		content = returnreq.read()
+    		imglist = re.findall(r'src="(http://.*?)"',content)
+    		x=0
+    		for imgurl in imglist:
+    			urllib.urlretrieve(imgurl,'./%s/%s_%s.jpg' % (options.output,options.mode,x))
+    			print "Download:%s" % imgurl
+    			x += 1
+    	else:
+    		print '错误,错误原因:不正常的返回状态码'
