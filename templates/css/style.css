@@ -1,0 +1,12 @@
+/* header */
+.header{ width:100%; position: fixed;top: 0;left: 0;z-index: 99;}
+
+/* classBox */
+.classBox{padding-top: 80px; min-height:568px; min-width:480px; display:block; }
+.classBox .p_box{ width:95%; margin:0 auto; padding-bottom:10px;}
+.classBox .p_box .info{ margin:10px auto;}
+.classBox .p_box .c_inner{ background:#F5F5F5; border:1px solid #cccccc; padding: 10px 0 5px 0;}
+.classBox .p_box .c_inner img{ padding:5px; margin-bottom: 5px; border:1px solid #cccccc; background:#ffffff;}
+
+/* bottom */
+.bottom{ margin-top:20px;height:50px; line-height:50px; background:#F5F5F5; border:1px solid #cccccc; clear:both}
